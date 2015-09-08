@@ -1,0 +1,16 @@
+# Serf Agent (Upstart unit)
+description "Serf Agent"
+start on (local-filesystems and net-device-up IFACE!=lo)
+stop on runlevel [06]
+
+env SERF={{ serf_home }}/bin/serf
+env SERFCONFIG=/etc/serf/eyeball.json
+
+setuid {{ serf_user }}
+setgid {{ serf_user }}
+
+# Serf emits log messages to stdout, and upstart will write that to
+# /var/log/upstart/serf.log
+exec $SERF agent -config-file $SERFCONFIG
+
+pre-stop exec sudo -u {{ serf_user }} {{ serf_home }}/bin/serf leave

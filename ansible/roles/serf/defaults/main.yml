@@ -1,0 +1,8 @@
+serf_version: 0.6.4
+serf_archive: "{{ serf_version }}_linux_amd64.zip"
+serf_download: "https://dl.bintray.com/mitchellh/serf/{{ serf_archive }}"
+serf_download_folder: "/tmp"
+serf_home: "/opt/serf-{{ serf_version }}"
+serf_user: serf
+serf_group: serf
+serf_port: 7946

@@ -1,0 +1,51 @@
+- name: Add Brightbox APT repository
+  apt_repository: repo='ppa:brightbox/ruby-ng'
+  tags: ruby
+
+- name: Install Ruby & common gem dependecies
+  apt: pkg={{item}} state=installed update_cache=true cache_valid_time=3600
+  with_items:
+    - build-essential
+    - automake
+    - bison
+    - autoconf
+    - pkg-config
+    - libreadline6
+    - libreadline6-dev
+    - openssl
+    - libssl-dev
+    - git-core
+    - zlib1g
+    - zlib1g-dev
+    - libyaml-dev
+    - libsqlite3-dev
+    - libxml2-dev
+    - libxslt1-dev
+    - libpq-dev
+    - libmysqlclient-dev
+    - libmysqlclient18
+    - curl
+    - nodejs
+    - python-software-properties
+    - ruby2.2
+    - ruby2.2-dev
+    - libncurses-dev
+  tags: ruby
+
+- name: Install Bundler
+  gem: name=bundler user_install=no
+  tags: ruby
+
+- name: Install Serfx
+  gem: name=serfx user_install=no
+  tags: ruby
+
+- name: Install curses
+  gem: name=curses user_install=no
+  tags: ruby
+
+- name: Install shortcut
+  copy:
+    dest: /home/vagrant/fizzbuzz
+    content: "ruby /opt/fizzbuzzr/fizzbuzzr.rb {{ inventory_hostname }} {{ serf_role }}"
+    mode: 0777

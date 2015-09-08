@@ -1,0 +1,4 @@
+---
+- name: reload serf
+  shell: reload serf
+  ignore_errors: yes

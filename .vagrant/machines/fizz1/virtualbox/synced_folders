@@ -1,0 +1,1 @@
+{"virtualbox":{"/vagrant":{"guestpath":"/vagrant","hostpath":"/Users/jason/Code/fizzbuzzr","disabled":false},"/opt/fizzbuzzr":{"guestpath":"/opt/fizzbuzzr","hostpath":"/Users/jason/Code/fizzbuzzr","disabled":false}}}

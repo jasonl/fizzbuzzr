@@ -1,0 +1,115 @@
+---
+- name: Install the unzip stuff
+  apt: package=unzip state=present
+
+- name: Test if serf executable exists
+  stat: >
+    path={{ serf_home }}/bin/serf
+  register: serf_exe
+
+- name: Download serf
+  get_url: >
+    url={{serf_download}}
+    dest={{serf_download_folder}}
+  when: serf_exe.stat.exists == False
+
+- name: Stop serf service
+  service: name=serf state=stopped
+  ignore_errors: yes
+  when: serf_exe.stat.exists == False
+
+- name: Create serf group
+  group: >
+    name={{ serf_group }}
+    state=present
+
+- name: Create serf user
+  user: >
+    name={{ serf_user }}
+    group={{ serf_group }}
+    comment="Serf user"
+    createhome=no
+    shell=/sbin/nologin
+
+- name: Create the serf directory
+  file: >
+    dest={{ item }}
+    state=directory
+    owner={{ serf_user }}
+    group={{ serf_user }}
+  with_items:
+    - "{{ serf_home }}"
+    - "{{ serf_home }}/bin"
+
+- name: copy and unpack
+  unarchive: >
+    src={{ serf_download_folder }}/{{ serf_archive }}
+    dest={{ serf_home }}/bin
+    copy=no
+  when: serf_exe.stat.exists == False
+
+- name: Set ownership
+  file: >
+    state=directory
+    path={{ serf_home }}
+    owner={{ serf_user }}
+    group={{ serf_group }}
+    recurse=yes
+  when: serf_exe.stat.exists == False
+
+- name: Link to somewhere that's in the path
+  file: >
+    dest=/usr/local/bin/serf
+    src={{ serf_home }}/bin/serf
+    state=link
+  when: serf_exe.stat.exists == False
+
+- name: Add the Upstart script for serf
+  template: >
+    src=serf.conf.j2
+    dest=/etc/init/serf.conf
+    owner=root
+    group=root
+    mode=0644
+
+- name: Create the serf directory
+  file: >
+    path=/etc/serf
+    state=directory
+    owner=root
+    group=root
+    mode=0755
+
+- name: Add the config script for serf
+  template: >
+    src=eyeball.json.j2
+    dest=/etc/serf/eyeball.json
+    owner=root
+    group=root
+    mode=0644
+  notify: reload serf
+
+- name: Add firewall ports for serf tcp traffic
+  ufw: >
+    rule=allow
+    src="0.0.0.0/0"
+    proto=tcp
+    port={{ serf_port }}
+
+- name: Add firewall ports for serf tcp traffic
+  ufw: >
+    rule=allow
+    src="0.0.0.0/0"
+    proto=udp
+    port={{ serf_port }}
+
+- name: Restart serf if changed
+  service: name=serf state=started
+
+- name: Restart eyeball if serf changed
+  service: name=eyeball state=restarted
+  ignore_errors: yes
+  when: serf_exe.stat.exists == False
+
+- name: Ensure serf runs on reboot
+  service: name=serf state=started enabled=true

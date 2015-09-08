@@ -1,0 +1,12 @@
+{
+  "node_name":"{{ inventory_hostname }}",
+  "tags": {
+    "role":"{{ serf_role }}"
+  },
+  "profile":"lan",
+  "rpc_addr":"127.0.0.1:7373",
+  "bind":"{{ ansible_eth1.ipv4.address }}:{{ serf_port}}",
+  "retry_join":[
+    "fizz1.local", "buzz1.local"
+  ]
+}
