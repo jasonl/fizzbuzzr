@@ -8,7 +8,7 @@ You'll need Vagrant and Ansible installed to launch the VMs.
 ```
 $ brew install vagrant
 $ brew install ansible
-$ vagrant plugin install vagrant-hostmanagerYou'll need Vagrant and Ansible installed to launch the VMs.
+$ vagrant plugin install vagrant-hostmanager
 $ vagrant up
 ```
 
